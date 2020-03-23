@@ -1,0 +1,12 @@
+<launch>
+
+    <node pkg="turtlesim" name="sim" type="turtlesim_node"/>
+
+    <node pkg="lab1" name="controller" type="turtle_controller.py">
+        <param name="forward" value="w"/>
+	<param name="backward" value="s"/>
+    	<param name="left" value="a"/>
+    	<param name="right" value="d"/>
+    </node>
+
+</launch>
