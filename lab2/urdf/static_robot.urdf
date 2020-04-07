@@ -1,13 +1,7 @@
 <?xml version="1.0"?>
 <robot name="robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
     <xacro:property name="props" value="${load_yaml('..//yaml/urdf.yaml')}"/>
-    <xacro:property name="base_l" value="0.15"/>
-    <xacro:property name="base_r" value="0.03"/> 
-    <xacro:property name="l_width" value="0.05"/>
-    <xacro:property name="l_height" value="0.04"/>
-    <xacro:property name="link3_len" value="0.2"/>  
-    <xacro:property name="link3_rad" value="0.04"/>    
-
+    <xacro:property name="param" value="${load_yaml('..//yaml/param.yaml')}"/>
  
     <material name="blue">
         <color rgba="0 0 0.8 1"/>
@@ -20,7 +14,7 @@
      <link name="base_link">
         <visual>
             <geometry>
-                <cylinder length="${base_l}" radius="${base_r}"/>
+                <cylinder length="${param['base_l']}" radius="${param['base_r']}"/>
             </geometry>
             <origin xyz="0 0 -0.09"/>
             <material name="white"/>
@@ -30,7 +24,7 @@
     <link name="link_1">
         <visual>
             <geometry>
-                <box size="${props['i2']['l_len']} ${l_width} ${l_height}"/>
+                <box size="${props['i2']['l_len']} ${param['l_width']} ${param['l_height']}"/>
             </geometry>
             <origin xyz="${props['i2']['l_xyz']}" rpy="${props['i2']['l_rpy']}"/>
             <material name="blue"/>
@@ -40,7 +34,7 @@
     <link name="link_2">
         <visual>
             <geometry>
-                <box size="${props['i3']['l_len']} ${l_width} ${l_height}"/>
+                <box size="${props['i3']['l_len']} ${param['l_width']} ${param['l_height']}"/>
             </geometry>
             <origin xyz="${props['i3']['l_xyz']}" rpy="${props['i3']['l_rpy']}"/>
             <material name="white"/>
@@ -50,7 +44,7 @@
     <link name="link_3">
         <visual>
             <geometry>
-                <cylinder length="${link3_len}" radius="${link3_rad}"/>
+                <cylinder length="${param['link3_len']}" radius="${param['link3_rad']}"/>
             </geometry>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <material name="blue"/>
