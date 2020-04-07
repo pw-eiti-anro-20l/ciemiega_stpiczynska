@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <robot name="robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
     <xacro:property name="props" value="${load_yaml('..//yaml/urdf.yaml')}"/>
+    <xacro:property name="base_l" value="0.15"/>
+    <xacro:property name="base_r" value="0.03"/> 
     <xacro:property name="l_width" value="0.05"/>
     <xacro:property name="l_height" value="0.04"/>
     <xacro:property name="link3_len" value="0.2"/>  
@@ -15,7 +17,15 @@
         <color rgba="1 1 1 1"/>
     </material>
 
- 
+     <link name="base_link">
+        <visual>
+            <geometry>
+                <cylinder length="${base_l}" radius="${base_r}"/>
+            </geometry>
+            <origin xyz="0 0 -0.09"/>
+            <material name="white"/>
+        </visual>
+    </link>
 
     <link name="link_1">
         <visual>
@@ -47,7 +57,12 @@
         </visual>
     </link>
 
-
+    <joint name="base_to_link1" type="fixed">
+        <parent link="base_link"/>
+        <child link="link_1"/>
+        <origin xyz="${props['i1']['j_xyz']}" rpy="${props['i1']['j_rpy']}"/>
+        <axis xyz="0 0 1"/>
+    </joint>
 
     <joint name="link1_to_link2" type="fixed">
         <parent link="link_1"/>
