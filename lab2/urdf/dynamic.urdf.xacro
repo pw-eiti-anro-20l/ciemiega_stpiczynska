@@ -47,25 +47,26 @@
       <geometry>
         <cylinder length="${param['link3_len']}" radius="${param['link3_rad']}"/>
       </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="${param['link3_len']/2} 0 0" rpy="0 1.57 0"/>
       <material name="blue"/>
     </visual>
   </link>
 
-  <joint name="base_link_to_link1" type="fixed">
+  <joint name="base_link_to_link1" type="continuous">
     <parent link="base_link"/>
     <child link="link1"/>
+    <axis xyz="0 0 1"/>
   </joint>
 
 
-  <joint name="joint2" type="fixed">
+  <joint name="joint2" type="continuous">
     <parent link="link1"/>
     <child link="link2"/>
     <axis xyz="0 0 1"/>
     <origin xyz="${props['i2']['j_xyz']}" rpy="${props['i2']['j_rpy']}"/>
   </joint>
 
-  <joint name="joint3" type="fixed">
+  <joint name="joint3" type="continuous">
     <parent link="link2"/>
     <child link="link3"/>
     <axis xyz="0 0 1"/>
