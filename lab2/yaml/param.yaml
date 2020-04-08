@@ -1,5 +1,6 @@
-base_l: 0.15
-base_r: 0.03
+base_l: 0.04
+base_h: 0.15
+base_w: 0.05
 l_width: 0.05
 l_height: 0.04
 link3_len: 0.2 

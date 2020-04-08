@@ -1,7 +1,7 @@
 
 <launch>
 	
-    <arg name="model" default="$(find lab2)/urdf/static_robot.urdf"/>
+    <arg name="model" default="$(find lab2)/urdf/static.urdf.xacro"/>
     <arg name="rvizconfig" default="$(find lab2)/rviz/urdf.rviz" />
 
     <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
