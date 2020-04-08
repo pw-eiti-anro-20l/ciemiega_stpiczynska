@@ -1,2 +1,2 @@
 # ciemiega_stpiczynska
-man gotta add something 
+Więcej informacji w zakłądce Wiki
