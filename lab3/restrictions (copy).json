@@ -1,0 +1,17 @@
+[
+	{
+	"name": "r1",
+	"forward": 0.5,
+	"backward": -0.5 
+	},
+	{
+	"name": "r1",
+	"forward": 0.5,
+	"backward": -0.5
+	},
+	{
+	"name": "r1",
+	"forward": 0.5,
+	"backward": -0.5 
+	}
+]
