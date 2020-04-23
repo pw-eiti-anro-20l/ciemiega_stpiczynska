@@ -26,57 +26,44 @@ def correct(pose):
 
 
 def forward_kinematics(data):
+    doPub = True
     if not correct(data):
         rospy.logerr('Incorrect position! ' + str(data))
+        doPub = False
         return
 
+
     kdlChain = kdl.Chain()
-    frameFactory = kdl.Frame();
+    frameFactory = kdl.Frame()
+    jntAngles = kdl.JntArray(3)
+    jointNums = [2,3,1]
 
-    frame0 = frameFactory.DH(0, 0, 0, 0);
-    joint0 = kdl.Joint(kdl.Joint.None)
-    kdlChain.addSegment(kdl.Segment(joint0, frame0))
+    for i in jointNums:
 
-    a, d, al, th = params['i2']
-    al, a, d, th = float(al), float(a), float(d), float(th)
-    frame1 = frameFactory.DH(a, al, d, th)
-    joint1 = kdl.Joint(kdl.Joint.RotZ)
-    kdlChain.addSegment(kdl.Segment(joint1, frame1))
+        a, d, al, th = params['i'+str(i)]
+        al, a, d, th = float(al), float(a), float(d), float(th)
+        frame = frameFactory.DH(a, al, d, th)
+        joint = kdl.Joint(kdl.Joint.RotZ)
+        kdlChain.addSegment(kdl.Segment(joint, frame))
 
-    a, d, al, th = params['i1']
-    al, a, d, th = float(al), float(a), float(d), float(th)
-    frame2 = frameFactory.DH(a, al, d, th)
-    joint2 = kdl.Joint(kdl.Joint.RotZ)
-    kdlChain.addSegment(kdl.Segment(joint2, frame2))
+        jntAngles[i-1] = data.position[i-1]
+        fksolver = kdl.ChainFkSolverPos_recursive(kdlChain)
+        eeFrame = kdl.Frame()
+        fksolver.JntToCart(jntAngles, eeFrame)
+        quaternion = eeFrame.M.GetQuaternion()
 
-    a, d, al, th = params['i3']
-    al, a, d, th = float(al), float(a), float(d), float(th)
-    frame3 = frameFactory.DH(a, al, d, th)
-    joint3 = kdl.Joint(kdl.Joint.TransZ)
-    kdlChain.addSegment(kdl.Segment(joint3, frame3))
-
-    jntAngles = kdl.JntArray(kdlChain.getNrOfJoints())
-    jntAngles[0] = data.position[0]
-    jntAngles[1] = data.position[1]
-    jntAngles[2] = -data.position[2] - d
-
-    fksolver = kdl.ChainFkSolverPos_recursive(kdlChain)
-    eeFrame = kdl.Frame()
-    fksolver.JntToCart(jntAngles, eeFrame)
-    quaternion = eeFrame.M.GetQuaternion()
-
-    pose = PoseStamped()
-    pose.header.frame_id = 'base_link'
-    pose.header.stamp = rospy.Time.now()
-    pose.pose.position.x = eeFrame.p[0]
-    pose.pose.position.y = eeFrame.p[1]
-    pose.pose.position.z = eeFrame.p[2]
-    pose.pose.orientation.x = quaternion[0]
-    pose.pose.orientation.y = quaternion[1]
-    pose.pose.orientation.z = quaternion[2]
-    pose.pose.orientation.w = quaternion[3]
-    pub.publish(pose)
-
+        pose = PoseStamped()
+        pose.header.frame_id = 'base_link'
+        pose.header.stamp = rospy.Time.now()
+        pose.pose.position.x = eeFrame.p[0]
+        pose.pose.position.y = eeFrame.p[1]
+        pose.pose.position.z = eeFrame.p[2]
+        pose.pose.orientation.x = quaternion[0]
+        pose.pose.orientation.y = quaternion[1]
+        pose.pose.orientation.z = quaternion[2]
+        pose.pose.orientation.w = quaternion[3]
+        if doPub:
+            pub.publish(pose)
 
 
 if __name__ == '__main__':

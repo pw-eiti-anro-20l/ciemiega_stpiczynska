@@ -46,8 +46,8 @@ def kinematics(data):
 
     a, d, al, th = params['i3']
     al, a, d, th = float(al), float(a), float(d), float(th)
-    tz = translation_matrix((0, 0, data.position[2]))
-    rz = rotation_matrix(th, zaxis)
+    tz = translation_matrix((0, 0, d))
+    rz = rotation_matrix(data.position[2], zaxis)
     tx = translation_matrix((a, 0, 0))
     rx = rotation_matrix(al, xaxis)
     T3 = concatenate_matrices(rx, tx, rz, tz)
