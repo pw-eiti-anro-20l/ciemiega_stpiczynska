@@ -1,12 +1,5 @@
 <launch>
 
-    <arg name="gui" default="true" />
-
-    <param name="use_gui" value="$(arg gui)"/>
-
-    <param name="robot_description" command="xacro --inorder '$(find lab3)/urdf/dynamic.urdf.xacro'"/>
-    
-
     <node name="NO_KDL" pkg="lab3" type="noKdl.py" />
 
 </launch>
