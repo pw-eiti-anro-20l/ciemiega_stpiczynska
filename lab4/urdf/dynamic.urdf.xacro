@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<robot name="model" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <xacro:property name="props" value="${load_yaml('..//yaml/urdf.yaml')}"/>
+    <xacro:property name="param" value="${load_yaml('..//yaml/param.yaml')}"/>
+
+    <material name="blue">
+        <color rgba="0 0 0.8 1"/>
+    </material>
+
+    <material name="white"> 
+        <color rgba="1 1 1 1"/>
+    </material>
+
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="${param['base_w']} ${param['base_l']} ${param['base_h']}"/>
+      </geometry>
+      <origin xyz="0 0 -0.09"/>
+      <material name="blue"/>
+    </visual>
+  </link>
+
+  <link name="link1">
+     <visual>
+      <geometry>
+         <box size="${props['i2']['l_len']} ${param['l_width']} ${param['l_height']}"/>
+      </geometry>
+      <origin xyz="${props['i2']['l_xyz']}" rpy="${props['i2']['l_rpy']}"/>
+      <material name="blue"/>
+    </visual>
+  </link>
+
+  <link name="link2">
+    <visual>
+      <geometry>
+        <box size="${props['i3']['l_len']} ${param['l_width']} ${param['l_height']}"/>
+      </geometry>
+      <origin xyz="${props['i3']['l_xyz']}" rpy="${props['i3']['l_rpy']}"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <link name="link3">
+    <visual>
+      <geometry>
+        <cylinder length="${param['link3_len']}" radius="${param['link3_rad']}"/>
+      </geometry>
+      <origin xyz="${param['link3_len']/2} 0 0" rpy="0 1.57 0"/>
+      <material name="blue"/>
+    </visual>
+  </link>
+
+  <joint name="base_link_to_link1" type="revolute">
+    <parent link="base_link"/>
+    <child link="link1"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="-3.14" upper="3.14" velocity="10"/>
+  </joint>
+
+
+  <joint name="joint2" type="revolute">
+    <parent link="link1"/>
+    <child link="link2"/>
+    <axis xyz="0 0 1"/>
+    <origin xyz="${props['i2']['j_xyz']}" rpy="${props['i2']['j_rpy']}"/>
+    <limit effort="1000.0" lower="-3.14" upper="3.14" velocity="10"/>
+  </joint>
+
+  <joint name="joint3" type="revolute">
+    <parent link="link2"/>
+    <child link="link3"/>
+    <axis xyz="0 0 1"/>
+    <origin xyz="${props['i3']['j_xyz']}" rpy="${props['i3']['j_rpy']}"/>
+    <limit effort="1000.0" lower="-3.14" upper="3.14" velocity="10"/>
+  </joint>
+
+</robot>
