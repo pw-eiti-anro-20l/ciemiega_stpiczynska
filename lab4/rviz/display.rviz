@@ -88,6 +88,21 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
+    - Alpha: 1
+      Axes Length: 0.4000000059604645
+      Axes Radius: 0.029999999329447746
+      Class: rviz/Pose
+      Color: 255; 255; 255
+      Enabled: true
+      Head Length: 0.10000000149011612
+      Head Radius: 0.05000000074505806
+      Name: OintPose
+      Shaft Length: 0.4000000059604645
+      Shaft Radius: 0.02500000037252903
+      Shape: Axes
+      Topic: /oint_pose
+      Value: true
+      Visual Enabled: true
     - Class: rviz/TF
       Enabled: true
       Frame Timeout: 15
