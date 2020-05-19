@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     rate = rospy.Rate(10.0)
     while not rospy.is_shutdown():
-    	desired_pos = rospy.wait_for_message('/oint_pose', geometry_msgs.msg.PoseStamped, timeout = 10).pose.position
+    	desired_pos = rospy.wait_for_message('oint_pose', geometry_msgs.msg.PoseStamped, timeout = 10).pose.position
         (trans, rot) = listener.lookupTransform('/base_link', '/link_3', rospy.Time(0))
 
         diff = geometry_msgs.msg.Point()

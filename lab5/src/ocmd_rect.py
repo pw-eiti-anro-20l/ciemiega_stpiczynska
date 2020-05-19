@@ -39,7 +39,8 @@ def rectangle():
             y = y - ay
             z = z - az
 
-       ''' print k
+        ''' 
+        print k
         k=k+1
         print x
         print y
