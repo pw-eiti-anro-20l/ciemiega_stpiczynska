@@ -1,70 +1,112 @@
 #!/usr/bin/env python
 
-import rospy
 import json
+from collections import OrderedDict
 import os
-from geometry_msgs.msg import PoseStamped
+import rospy
 from sensor_msgs.msg import JointState
+from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import Header
-from math import *
-from lab5.srv import oint_control
+from math import atan2, sqrt, pi
 
+def getParams():
+    path = os.path.realpath(__file__)
+    with open(os.path.dirname(path) + '/../param_files/dh_file.json') as input_file:
+        params = json.loads(input_file.read(), object_pairs_hook=OrderedDict)
+    return params
 
+def getRestrictions():
+    path = os.path.realpath(__file__)
+    with open(os.path.dirname(path) + '/../restrictions.json') as input_file:
+        rest = json.loads(input_file.read(), object_pairs_hook=OrderedDict) 
+    return rest
 
-def inverted_kinematics(data):
-    global a1
+def checkRestrictions(theta, rest):
+    for i in range(1,4):
+        if theta[i-1] < rest["i" + str(i)][0] or theta[i-1] > rest["i" + str(i)][1]:
+            return False
+    return True
+
+def fill_jointState(theta):
+    jointState = JointState()
+    jointState.header = Header()
+    jointState.header.stamp = rospy.Time.now()
+    jointState.name = ['base_link_to_link1', 'joint2', 'joint3']
+    jointState.position = theta
+    jointState.velocity = []
+    jointState.effort = []
+    return jointState
+
+def inverse_kinematics(data):
     global a2
-    global d
+    global a3
+    global current_theta
+    global rest
 
+    px = data.pose.position.x
+    py = data.pose.position.y
+    pz = data.pose.position.z
 
-
-   # current_pos = rospy.wait_for_message('joint_states', JointState, timeout = 10).position
-
-    x = data.pose.position.x
-    y = data.pose.position.y
-    z = data.pose.position.z
-
-    dz = sqrt(x**2 + y**2)
-
-    alfa1 = atan2(y, x)
-
-    try:
-        alfa2 = acos((-a2**2 + a1**2 + dz**2) / (2 * a1 * dz))
-        alfa3 = acos((a1**2 + a2**2 - dz**2) / (2 * a1 * a2))
-    except:
-        rospy.logerr('warning')
+    if px**2 + py**2 <= 0.:
+        rospy.logerr('Infinite solutions')
         return
 
-    theta1 = (alfa1 + alfa2, alfa1 - alfa2)
-    theta2 = (-pi + alfa3, pi - alfa3)
-    theta3 = -z
+    theta = [None]*3
 
-    th1 = theta1[0]
-    th2 = theta2[0]
+    c3 = (px**2 + py**2 + pz**2 - a2**2 - a3**2)/(2*a2*a3)
+    try:
+        s3 = sqrt(1 - c3**2)
+    except ValueError:
+        rospy.logerr('Position unreachable')
+        return
 
-    computed_joint_state = JointState()
-    computed_joint_state.header = Header()
-    computed_joint_state.header.stamp = rospy.Time.now()
-    computed_joint_state.name = ['base_to_link1', 'link1_to_link2', 'link2_to_link3']
+    flag = False
 
-    computed_joint_state.position = [th1, th2, theta3]
-    computed_joint_state.velocity = []
-    computed_joint_state.effort = []
-    jstate_pub.publish(computed_joint_state)
+    #Joint_1 (base_to_link_1)
+    if abs(atan2(py, px) - current_theta[0]) < abs((atan2(-py, -px)) - current_theta[0]):
+        theta[0] = atan2(py, px)
+        flag = True
+    else:
+        theta[0] = atan2(-py, -px)
+
+    #Joint_2 (link1_to_link_2) and Joint_3 (link2_to_link_3)
+    if abs(atan2(s3, c3) - current_theta[2]) < abs(atan2(-s3, c3) - current_theta[2]):
+        theta[2] = atan2(s3, c3)
+        if flag:
+            theta[1] = atan2(-pz, sqrt(px**2 + py**2)) - atan2(a3*s3, a2 + a3*c3)
+        else:
+            theta[1] = pi - atan2(-pz, sqrt(px**2 + py**2)) + atan2(a3*s3, a2 + a3*c3)
+    else:
+        theta[2] = atan2(-s3, c3)
+        if flag:
+            theta[1] = atan2(-pz, sqrt(px**2 + py**2)) - atan2(-a3*s3, a2 + a3*c3)
+        else:
+            theta[1] = pi - atan2(-pz, sqrt(px**2 + py**2)) + atan2(-a3*s3, a2 + a3*c3)
+
+    #if not checkRestrictions(theta, rest):
+     #   rospy.logerr('Restrictions violation')
+      #  return
+
+    current_theta = theta
+    jointState = fill_jointState(theta)
+
+    pub = rospy.Publisher('jint_control', JointState, queue_size=10)
+    pub.publish(jointState)
+
+def ikin():
+    rospy.init_node('ikin', anonymous=True)
+    rospy.Subscriber('oint_pose', PoseStamped, inverse_kinematics)
+    rospy.spin()
 
 if __name__ == "__main__":
-    params = {}
-    with open(os.path.dirname(os.path.realpath(__file__)) + '/../dh.json', 'r') as file:
-        params = json.loads(file.read())
-    rest = {}
-    with open(os.path.dirname(os.path.realpath(__file__)) + '/../rest.json', 'r') as file:
-        rest = json.loads(file.read())
+    #params = getParams()
+    #rest = getRestrictions()
+    #a2 = params['i3'][0]
+    a2=1
+    a3 = 0.2
+    current_theta = [0.0]*3
 
-    a1 = float(params['i2'][0])
-    a2 = float(params['i3'][0])
-    d = float(params['i3'][1])
-
-    rospy.init_node('ikin_node')
-    sub = rospy.Subscriber('oint_pose', PoseStamped, inverted_kinematics)
-    jstate_pub = rospy.Publisher('jstate', JointState, queue_size=10)
-    rospy.spin()
+    try:
+        ikin()
+    except rospy.ROSInterruptException:
+        pass

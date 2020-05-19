@@ -32,12 +32,9 @@ def handle_interpolation(req):
     frames_number = int(math.ceil(req.t * freq))
 
     for i in range(frames_number+1):
-        x = compute_int(current_pos[0], new_pos[0], req.t, current_time, req.i)
-        y = compute_int(current_pos[1], new_pos[1], req.t, current_time, req.i)
-        z = compute_int(current_pos[2], new_pos[2], req.t, current_time, req.i)
-    #    x = compute_int(prev_pos[0], new_pos[0], req.t, current_time, req.i)
-   #     y = compute_int(prev_pos[1], new_pos[1], req.t, current_time, req.i)
-     #   z = compute_int(prev_pos[2], new_pos[2], req.t, current_time, req.i)
+        x = compute_int(prev_pos[0], new_pos[0], req.t, current_time, req.i)
+        y = compute_int(prev_pos[1], new_pos[1], req.t, current_time, req.i)
+        z = compute_int(prev_pos[2], new_pos[2], req.t, current_time, req.i)
         qx = compute_int(prev_q[0], new_q[0], req.t, current_time, req.i)
         qy = compute_int(prev_q[1], new_q[1], req.t, current_time, req.i)
         qz = compute_int(prev_q[2], new_q[2], req.t, current_time, req.i)
@@ -58,6 +55,7 @@ def handle_interpolation(req):
         path.header = pose.header
         path.poses.append(pose)
         path_pub.publish(path)
+        
         current_time = current_time + 1.0 / freq
         rate.sleep()
 
