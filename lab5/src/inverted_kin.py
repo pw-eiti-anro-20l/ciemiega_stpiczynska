@@ -20,9 +20,9 @@ def inverse_kinematics(data):
     y = data.pose.position.y
     z = data.pose.position.z
 
-    if x**2 + y**2 <= 0.:
-        rospy.logerr('Infinite solutions')
-        return
+    #if x**2 + y**2 <= 0.:
+     #   rospy.logerr('Warning. Position infinite.')
+      #  return
 
     theta = [None]*3
 
@@ -30,7 +30,7 @@ def inverse_kinematics(data):
     try:
         s3 = sqrt(1 - c3**2)
     except ValueError:
-        rospy.logerr('Position can not be reach')
+        rospy.logerr('Warning. Wrong position.')
         return
 
     check = False
@@ -46,7 +46,7 @@ def inverse_kinematics(data):
     if abs(atan2(s3, c3) - current_theta[2]) < abs(atan2(-s3, c3) - current_theta[2]):
         theta[2] = atan2(s3, c3)
         if check:
-            theta[1] = atan2(-pz, sqrt(x**2 + y**2)) - atan2(a3*s3, a2 + a3*c3)
+            theta[1] = atan2(-z, sqrt(x**2 + y**2)) - atan2(a3*s3, a2 + a3*c3)
         else:
             theta[1] = pi - atan2(-z, sqrt(x**2 + y**2)) + atan2(a3*s3, a2 + a3*c3)
     else:
@@ -56,7 +56,7 @@ def inverse_kinematics(data):
         else:
             theta[1] = pi - atan2(-z, sqrt(x**2 + y**2)) + atan2(-a3*s3, a2 + a3*c3)
 
-
+    #rospy.logerr(theta)
 
     current_theta = theta
     jointState = JointState()

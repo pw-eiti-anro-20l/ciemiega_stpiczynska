@@ -10,7 +10,7 @@ import math
 
 
 freq = 50
-prev_pos = (0.6, 0., 0.)
+prev_pos = (1.2, 0., 0.)
 prev_q = (0., 0., 0., 1.)
 path = Path()
 
@@ -18,8 +18,8 @@ path = Path()
 def handle_interpolation(req):
 
 
-    if req.t <= 0 or not -3.14 <= req.x <= 3.14 or not -3.14 <= req.y <= 0 or not -1 <= req.z <= 1:
-        return False
+    #if req.t <= 0 or not -3.14 <= req.x <= 3.14 or not -3.14 <= req.y <= 0 or not -1 <= req.z <= 1:
+     #   return False
 
     global prev_pos
     global prev_q

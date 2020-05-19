@@ -15,9 +15,9 @@ def circle():
     dth = 3.1415 / freq
 
     t = 1.0 / freq
-    z0 = 0.05
-    x0 = 0.4
+    x0 = 1.0
     y0 = 0.0
+    z0 = 0.0
 
     rospy.wait_for_service('oint')
     rate = rospy.Rate(freq)

@@ -14,14 +14,16 @@ def rectangle():
     dth = 3.1415 / freq
 
     t = 1.0 / freq
-    z = -0.1
-    x0 = x = 0.25
-    y0 = y = 0.2
-    xLast = 0.5
-    yLast = 0.3
+    z = 0.0
+    x0 = x = 0.9
+    y0 = y = -0.1
+    xLast = 1.1
+    yLast = 0.1
 
     s1 = True
     s2 = s3 = s4 = False
+
+    #k=0
 
     rospy.wait_for_service('oint')
     rate = rospy.Rate(freq)
@@ -31,11 +33,18 @@ def rectangle():
         elif round(x, 2) == xLast and y < yLast:
             y = y + ay
             z = z + az
-        elif x > x0 and round(y, 2) == yLast:
+        elif x > x0 and round(y, 2) >= yLast:
             x = x - ax
         elif round(x, 2) == x0 and y > y0:
             y = y - ay
             z = z - az
+
+       ''' print k
+        k=k+1
+        print x
+        print y
+        print z'''
+
 
         interpolation = rospy.ServiceProxy('oint', oint_control)
         resp1 = interpolation(x, y, z, 0.0, 0.0, 0.0, 1.0, t, '')
